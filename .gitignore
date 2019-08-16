@@ -1,0 +1,6 @@
+# ref: https://www.gitignore.io
+/output
+/tmp
+/openssl
+/.vscode
+*.code-workspace
