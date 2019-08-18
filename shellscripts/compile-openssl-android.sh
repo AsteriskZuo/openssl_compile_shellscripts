@@ -21,14 +21,14 @@ OPENSSL_VERSION="openssl-1.0.2p"
 # _ANDROID_NDK_ROOT="/Users/lsq/Desktop/work/android/adt-bundle-mac-x86_64-20140702/android-ndk-r8e"
 # _OPENSSL_GCC_VERSION=4.7
 # _ANDROID_API="android-14"
-_ANDROID_NDK_ROOT="/Users/yu.zuo/Library/Android/sdk/ndk-bundle"
+_ANDROID_NDK_ROOT="/Users/asterisk/Library/Android/sdk/ndk-bundle"
 _OPENSSL_GCC_VERSION=4.9
 _API=21
 _OPENSSL_ROOT="${PROJECT_OPENSSL_DIR}/${OPENSSL_VERSION}"
 _INSTALL_ROOT="${PROJECT_TMP_DIR}/${OPENSSL_VERSION}" 
 BUILD_SHARED=true
 #BUILD_CLANG=true
-# TARGET_ARCHITECTURES=( "armeabi-v7a" "arm64-v8a" "x86" "x86_64" "mip_64")
+# TARGET_ARCHITECTURES=( "armeabi-v7a" "arm64-v8a" "x86" "x86_64" )
 TARGET_ARCHITECTURES=( "armeabi-v7a" )
 # TARGET_ARCHITECTURES=( "arm64-v8a" )
 #TARGET_ARCHITECTURES=( "x86_64" )
@@ -43,6 +43,9 @@ SHARED_LIBRARY_SUFFIX=".so"
 OPENSSL_MODULES=( "crypto" "ssl" )
 NCPU=8
 #NCPU=1
+
+dir_is_exist2 ${_ANDROID_NDK_ROOT}
+
 
 echo OPENSSL_VERSION=${OPENSSL_VERSION}
 echo _ANDROID_NDK_ROOT=${_ANDROID_NDK_ROOT}
@@ -106,10 +109,7 @@ fi
 
 echo "check gcc exit ?"
 GCC_DIR=${PROJECT_OUTPUT_DIR}/gcc
-if [ ! -d "${GCC_DIR}" ]; then
-  echo "gcc is not find."
-  exit 1
-fi
+dir_is_exist2 ${GCC_DIR}
 # read -n1 -p "Press any key to continue..."
 
 
@@ -273,10 +273,12 @@ for TARGET_ARCHITECTURE in "${TARGET_ARCHITECTURES[@]}"; do
 
 
   pushd . > /dev/null
+
+  
   cd ${PROJECT_OPENSSL_DIR}/${OPENSSL_VERSION}
   echo "configure start..."
   CONFIGURE_COMMAND="./Configure ${CONFIGURE_SWITCH} ${OPTIONS[*]} --openssldir=${PROJECT_TMP_DIR}/${OPENSSL_VERSION}-Android-${ARCH}"
-  read -n1 -p "Press any key to continue..."
+  # read -n1 -p "Press any key to continue..."
   echo "${CONFIGURE_COMMAND}" &> "${PROJECT_TMP_DIR}/${OPENSSL_VERSION}-Android-${ARCH}.log"
   eval "${CONFIGURE_COMMAND}" >> "${PROJECT_TMP_DIR}/${OPENSSL_VERSION}-Android-${ARCH}.log" 2>&1
   echo "configure done."
@@ -287,7 +289,7 @@ for TARGET_ARCHITECTURE in "${TARGET_ARCHITECTURES[@]}"; do
   # make clean >> "${PROJECT_TMP_DIR}/${OPENSSL_VERSION}-Android-${ARCH}.log" 2>&1
   echo "make done."
   # read -n1 -p "Press any key to continue..."
-  popd > /dev/null
+  
 
   mkdir -p ${PROJECT_TMP_DIR}/${OPENSSL_VERSION}-Android-${ARCH}/lib
   mkdir -p ${PROJECT_TMP_DIR}/${OPENSSL_VERSION}-Android-${ARCH}/include
@@ -297,7 +299,12 @@ for TARGET_ARCHITECTURE in "${TARGET_ARCHITECTURES[@]}"; do
   done
   # read -n1 -p "Press any key to continue..."
 
+  echo "make clean start..."
+  make clean >> "${PROJECT_TMP_DIR}/${OPENSSL_VERSION}-Android-${ARCH}.log" 2>&1
+  echo "make clean done."
+  # read -n1 -p "Press any key to continue..."
 
+  popd > /dev/null
   
 done
 echo "build done."

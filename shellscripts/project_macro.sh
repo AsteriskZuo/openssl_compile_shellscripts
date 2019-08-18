@@ -20,10 +20,55 @@ echo PROJECT_TEST_DIR="${PROJECT_TEST_DIR}"
 
 # read -n1 -p "Press any key to continue..."
 
+str_is_empty() {
+    CHECK_STR=$1
+    if [ -z ${CHECK_STR} ]; then
+        echo "str is empty."
+        exit 1
+    fi
+}
+create_dir() {
+    CHECK_DIR=$1    
+    if [ ! -d ${CHECK_DIR} ]; then
+        echo "create ${CHECK_DIR} dir."
+        mkdir -p ${CHECK_DIR}
+    fi
+}
+dir_is_exist() {
+    CHECK_DIR=$1    
+    if [ ! -d ${CHECK_DIR} ]; then
+        echo false
+    else
+        echo true
+    fi
+}
+dir_is_exist2() {
+    CHECK_DIR=$1    
+    if [ ! -d ${CHECK_DIR} ]; then
+        echo "${CHECK_DIR} is not exist."
+        exit 1
+    fi
+}
 init() {
     #创建目录
-    mkdir ${PROJECT_TMP_DIR}
-    mkdir ${PROJECT_OUTPUT_DIR}
+    str_is_empty ${PROJECT_TMP_DIR}
+    create_dir ${PROJECT_TMP_DIR}
+    str_is_empty ${PROJECT_OUTPUT_DIR}
+    create_dir ${PROJECT_OUTPUT_DIR}
+    str_is_empty ${PROJECT_OPENSSL_DIR}
+    create_dir ${PROJECT_OPENSSL_DIR}
+    # if [ ! -d ${PROJECT_TMP_DIR} ]; then
+    #     echo "create ${PROJECT_TMP_DIR} dir"
+    #     mkdir -p ${PROJECT_TMP_DIR}
+    # fi
+    # if [ ! -d ${PROJECT_OUTPUT_DIR} ]; then
+    #     echo "create ${PROJECT_OUTPUT_DIR} dir"
+    #     mkdir -p ${PROJECT_OUTPUT_DIR}
+    # fi
+    # if [ ! -d ${PROJECT_OPENSSL_DIR} ]; then
+    #     echo "create ${PROJECT_OPENSSL_DIR} dir"
+    #     mkdir -p ${PROJECT_OPENSSL_DIR}
+    # fi
 }
 clean() {
     #如果SUB_DIR为空，则删除所有PROJECT_DIR文件夹目录下的文件    

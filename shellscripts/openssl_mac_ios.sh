@@ -11,6 +11,13 @@
 echo "############ openssl_mac_ios.sh start... ############ "
 
 set -e
+
+# ./project_macro.sh
+CURRENT_DIR=$(cd `dirname $0`; pwd)
+. $CURRENT_DIR/project_macro.sh
+# read -n1 -p "Press any key to continue..."
+
+eval init
  
 usage ()
 {
@@ -22,15 +29,10 @@ if [ $1 -e "-h" ]; then
 	usage
 fi
  
-MIN_SDK_VERSION="7.0"
-if [ -z $1 ]; then
-	SDK_VERSION="12.1"
-else
-	SDK_VERSION=$1
-fi
- 
+MIN_SDK_VERSION="9.0" 
 OPENSSL_VERSION="openssl-1.0.2p"
 DEVELOPER=`xcode-select -print-path`
+dir_is_exist2 "${DEVELOPER}"
 
 
 buildMac()
@@ -63,16 +65,28 @@ buildIOS()
   
 	if [[ "${ARCH}" == "i386" || "${ARCH}" == "x86_64" ]]; then
 		PLATFORM="iPhoneSimulator"
+		IOS_TYPE="iphonesimulator"
 	else
 		PLATFORM="iPhoneOS"
+		IOS_TYPE="iphoneos"
 		sed -ie "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;!" "crypto/ui/ui_openssl.c"
 	fi
   
-	export $PLATFORM
+	# xcodebuild -showsdks
+	SDK_VERSION=`xcodebuild -sdk ${IOS_TYPE} -version | grep 'SDKVersion' | cut -d' ' -f2`
+	export PLATFORM
 	export CROSS_TOP="${DEVELOPER}/Platforms/${PLATFORM}.platform/Developer"
 	export CROSS_SDK="${PLATFORM}${SDK_VERSION}.sdk"
 	export BUILD_TOOLS="${DEVELOPER}"
 	export CC="${BUILD_TOOLS}/usr/bin/gcc -arch ${ARCH}"
+
+	echo PLATFORM=${PLATFORM}
+	echo CROSS_TOP=${CROSS_TOP}
+	echo CROSS_SDK=${CROSS_SDK}
+	echo CC=${CC}
+	echo ${CROSS_TOP}/SDKs/${CROSS_SDK}
+	dir_is_exist2 ${CROSS_TOP}/SDKs/${CROSS_SDK}
+	# read -n1 -p "Press any key to continue..."
    
 	echo "Building ${OPENSSL_VERSION} for ${PLATFORM} ${SDK_VERSION} ${ARCH}"
 	# echo ${PROJECT_OPENSSL_DIR}/${OPENSSL_VERSION}	
@@ -93,10 +107,7 @@ buildIOS()
 }
 
 
-# ./project_macro.sh
-CURRENT_DIR=$(cd `dirname $0`; pwd)
-. $CURRENT_DIR/project_macro.sh
-# read -n1 -p "Press any key to continue..."
+
 
 echo "clean up start..."
 # echo ${PROJECT_OUTPUT_DIR}/lib/iOS

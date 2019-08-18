@@ -14,12 +14,20 @@ CURRENT_DIR=$(cd `dirname $0`; pwd)
 . $CURRENT_DIR/project_macro.sh
 # read -n1 -p "Press any key to continue..."
 
-export NDK_HOME=/Users/yu.zuo/Library/Android/sdk/ndk-bundle
+ANDROID_NDK_ROOT=/Users/asterisk/Library/Android/sdk/ndk-bundle
 PLATFORM=android-21
-SH_MAKE=$NDK_HOME/build/tools/make-standalone-toolchain.sh
+SH_MAKE=$ANDROID_NDK_ROOT/build/tools/make-standalone-toolchain.sh
 INSTALL_DIR=${PROJECT_OUTPUT_DIR}
 
-echo "NDK_HOME=" $NDK_HOME
+echo check android ndk dir is exist?
+dir_is_exist2 ${ANDROID_NDK_ROOT}
+
+# init dirs
+eval init
+
+
+
+echo "ANDROID_NDK_ROOT=" $ANDROID_NDK_ROOT
 echo "PLATFORM=" $PLATFORM
 echo "SH_MAKE=" $SH_MAKE
 
